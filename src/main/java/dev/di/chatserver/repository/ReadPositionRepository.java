@@ -1,10 +1,12 @@
 package dev.di.chatserver.repository;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class ReadPositionRepository {
+@Profile("memory")
+public class ReadPositionRepository implements ReadPositionStore {
     private record Key(Long roomId, Long memberId) {}
     private final ConcurrentHashMap<Key, Long> positions = new ConcurrentHashMap<>();
 

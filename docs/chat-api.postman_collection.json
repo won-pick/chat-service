@@ -2,7 +2,7 @@
   "info": {
     "name": "Chat 메시지 API 실습",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "최신 API: 메시지 전송에 Idempotency-Key 필수. 자동 변수는 새 전송마다 새 키를 생성합니다. 재시도 테스트에는 같은 고정 키를 입력하세요. 실제 인증·Market·Trade 연동은 미정입니다."
+    "description": "Apidog/Postman Chat 핵심 흐름. 방 생성과 판매자 답장의 응답 ID를 자동 변수로 저장합니다. 전송에 Idempotency-Key가 필수이며 재시도 테스트에는 같은 고정 키를 사용하세요. 인증·Market·Trade 호출은 실습 Chat 범위에 아직 없습니다."
   },
   "variable": [
     {
@@ -12,11 +12,15 @@
     {
       "key": "roomId",
       "value": "1"
+    },
+    {
+      "key": "replyMessageId",
+      "value": "1"
     }
   ],
   "item": [
     {
-      "name": "1. 채팅방 생성 (응답 id를 roomId 변수에 입력)",
+      "name": "1. 채팅방 생성",
       "request": {
         "method": "POST",
         "header": [
@@ -35,7 +39,14 @@
             }
           }
         }
-      }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('방 생성 또는 기존 방 반환', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+          "pm.collectionVariables.set('roomId', pm.response.json().id);"
+        ]}
+      }]
     },
     {
       "name": "2. 구매자 메시지 전송",
@@ -87,7 +98,14 @@
             }
           }
         }
-      }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('판매자 답장 생성', () => pm.response.to.have.status(201));",
+          "pm.collectionVariables.set('replyMessageId', pm.response.json().id);"
+        ]}
+      }]
     },
     {
       "name": "4. 판매자로 대화 조회",
@@ -135,7 +153,7 @@
       "name": "7. 내 채팅방과 안 읽은 수",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/chat/rooms?memberId=2",
+        "url": "{{baseUrl}}/chat/rooms?memberId=1",
         "header": []
       }
     },
@@ -152,7 +170,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"memberId\": 2,\n  \"lastReadMessageId\": 1\n}",
+          "raw": "{\n  \"memberId\": 1,\n  \"lastReadMessageId\": {{replyMessageId}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -165,7 +183,7 @@
       "name": "9. 내 읽은 위치",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/chat/rooms/{{roomId}}/read-position?memberId=2",
+        "url": "{{baseUrl}}/chat/rooms/{{roomId}}/read-position?memberId=1",
         "header": []
       }
     },
@@ -173,7 +191,7 @@
       "name": "10. 상대 읽은 위치",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/chat/rooms/{{roomId}}/read-position/peer?memberId=1",
+        "url": "{{baseUrl}}/chat/rooms/{{roomId}}/read-position/peer?memberId=2",
         "header": []
       }
     },

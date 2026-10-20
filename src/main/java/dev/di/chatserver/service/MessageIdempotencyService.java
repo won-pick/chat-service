@@ -4,12 +4,14 @@ import dev.di.chatserver.domain.ChatMessage;
 import dev.di.chatserver.exception.ChatRequestException;
 import dev.di.chatserver.exception.ErrorCode;
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 @Service
-public class MessageIdempotencyService {
+@Profile("memory")
+public class MessageIdempotencyService implements MessageDeduplicator {
     private record Key(Long roomId, Long senderId, String value) {}
     private record Result(String content, ChatMessage message) {}
     private final Map<Key, Result> results = new HashMap<>();

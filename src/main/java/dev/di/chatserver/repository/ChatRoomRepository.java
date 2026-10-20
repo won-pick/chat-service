@@ -2,6 +2,7 @@ package dev.di.chatserver.repository;
 import java.util.List;
 import dev.di.chatserver.domain.ChatRoom;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class ChatRoomRepository {
+@Profile("memory")
+public class ChatRoomRepository implements ChatRoomStore {
 
     private final Map<Long, ChatRoom> rooms = new ConcurrentHashMap<>();
     private final AtomicLong sequence = new AtomicLong(0);

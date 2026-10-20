@@ -12,11 +12,16 @@ public class ChatMessage {
 
     public ChatMessage(Long id, Long roomId,
                        Long senderId, String content) {
+        this(id, roomId, senderId, content, LocalDateTime.now());
+    }
+
+    public ChatMessage(Long id, Long roomId,
+                       Long senderId, String content, LocalDateTime sentAt) {
         this.id = id;
         this.roomId = roomId;
         this.senderId = senderId;
         this.content = content;
-        this.sentAt = LocalDateTime.now();
+        this.sentAt = sentAt;
     }
 
     public Long getId() {

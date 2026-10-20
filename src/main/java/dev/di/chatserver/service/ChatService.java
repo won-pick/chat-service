@@ -5,8 +5,8 @@ import dev.di.chatserver.domain.ChatRoom;
 import dev.di.chatserver.exception.ChatAccessDeniedException;
 import dev.di.chatserver.exception.ChatRoomNotFoundException;
 import dev.di.chatserver.exception.SelfChatNotAllowedException;
-import dev.di.chatserver.repository.ChatMessageRepository;
-import dev.di.chatserver.repository.ChatRoomRepository;
+import dev.di.chatserver.repository.ChatMessageStore;
+import dev.di.chatserver.repository.ChatRoomStore;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import dev.di.chatserver.exception.ChatRequestException;
 import dev.di.chatserver.exception.ErrorCode;
 import dev.di.chatserver.dto.ChatRoomListResponse;
 import dev.di.chatserver.dto.ChatMessageResponse;
-import dev.di.chatserver.repository.ReadPositionRepository;
+import dev.di.chatserver.repository.ReadPositionStore;
 import dev.di.chatserver.dto.ReadPositionResponse;
 import dev.di.chatserver.dto.PeerReadResponse;
 import dev.di.chatserver.exception.ChatMessageNotFoundException;
@@ -23,16 +23,16 @@ import dev.di.chatserver.exception.ChatMessageNotFoundException;
 @Service
 public class ChatService {
 
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
-    private final ReadPositionRepository readPositionRepository;
-    private final MessageIdempotencyService idempotencyService;
+    private final ChatRoomStore chatRoomRepository;
+    private final ChatMessageStore chatMessageRepository;
+    private final ReadPositionStore readPositionRepository;
+    private final MessageDeduplicator idempotencyService;
 
     public ChatService(
-            ChatRoomRepository chatRoomRepository,
-            ChatMessageRepository chatMessageRepository,
-            ReadPositionRepository readPositionRepository,
-            MessageIdempotencyService idempotencyService) {
+            ChatRoomStore chatRoomRepository,
+            ChatMessageStore chatMessageRepository,
+            ReadPositionStore readPositionRepository,
+            MessageDeduplicator idempotencyService) {
 
         this.chatRoomRepository = chatRoomRepository;
         this.chatMessageRepository = chatMessageRepository;

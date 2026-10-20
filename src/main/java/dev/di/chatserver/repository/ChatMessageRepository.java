@@ -2,6 +2,7 @@ package dev.di.chatserver.repository;
 
 import dev.di.chatserver.domain.ChatMessage;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class ChatMessageRepository {
+@Profile("memory")
+public class ChatMessageRepository implements ChatMessageStore {
 
     private final Map<Long, ChatMessage> messages =
             new ConcurrentHashMap<>();
