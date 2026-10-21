@@ -16,26 +16,25 @@ React가 상품과 거래 정보로 채팅방 생성을 요청하고, Chat의 AP
 
 JDK 21과 포함된 Gradle Wrapper를 사용합니다.
 
-```sh
-# 빠른 로컬 실습: H2 인메모리 DB + JDBC (재시작 시 초기화)
-./gradlew bootRun
+MySQL이 localhost:3306에서 실행 중이고 root 계정 비밀번호가 1234이면 기본 실행만 하면 됩니다.
+chat_db와 없는 테이블을 자동 생성하며, 서버를 재시작해도 대화·읽음 위치가 유지됩니다.
 
-# 가이드 기준 MySQL 실습
-mysql -u root -p -e 'CREATE DATABASE IF NOT EXISTS chat_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
-CHAT_DB_URL='jdbc:mysql://localhost:3306/chat_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul' \
-CHAT_DB_USER=root CHAT_DB_PASSWORD='your-password' \
-./gradlew bootRun --args='--spring.profiles.active=mysql'
+    .\gradlew.bat bootRun
 
-./gradlew test bootJar
-```
+JDBC URL/계정 변경은 CHAT_DB_URL, CHAT_DB_USER, CHAT_DB_PASSWORD로 지정합니다.
+기존 mysql 프로필을 지정해도 동일한 MySQL 기본 설정을 사용합니다.
+임시 메모리 DB로 실행할 때만 아래 h2 프로필을 사용합니다.
 
-Windows PowerShell에서는 `./gradlew` 대신 `.\gradlew.bat`을 사용하고 환경 변수는 `$env:CHAT_DB_USER='root'` 형태로 설정합니다. `schema.sql`이 서버 시작 시 Chat 테이블을 생성합니다. MySQL에서는 메시지와 읽음 위치, 멱등 요청 기록이 재시작 후에도 유지됩니다. 기존 메모리 저장 구현을 확인하려면 `--spring.profiles.active=memory`를 사용할 수 있습니다.
+    .\gradlew.bat bootRun --args="--spring.profiles.active=h2"
+
+기존 Java 메모리 저장 구현은 memory 프로필입니다. 자동 테스트는 test 프로필의 독립 H2를 사용합니다.
+DB/테이블 생성은 기존 데이터 삭제나 스키마 구조 변경을 수행하지 않습니다.
 
 - 기본 주소: `http://localhost:8080`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - Chat DB 스키마: `chat_rooms`, `chat_messages`, `chat_read_positions`, `chat_message_requests` (`src/main/resources/schema.sql`)
-- 팀 서버별 포트/DB: Market `8082`/`market_db`, Trade `8083`/`trade_db`, Chat `8080`/`chat_db`, Payment `8084`/팀 확정 필요
+- 팀 서버별 포트/DB: Market `8082`/`market_db`, Trade `8083`/`trade_db`, Chat `8080`/`chat_db`, Payment `8084`/payment_db
 
 ## Chat API
 
